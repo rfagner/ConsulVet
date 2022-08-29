@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ConsulVet.API
@@ -30,7 +32,27 @@ namespace ConsulVet.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConsulVet.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { 
+                    Title = "ConsulVet.API", 
+                    Version = "v1",
+                    Description = "API desenvolvida para o site da clínica veterinária ConsulVet",
+                    TermsOfService = new Uri("https://github.com/rfagner/ConsulVet.API"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Renildo Fagner",
+                        Url = new Uri("https://www.linkedin.com/in/rfagner/")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "",
+                        Url = new Uri("https://github.com/rfagner/ConsulVet.API/blob/main/LICENSE")
+                    }
+                });
+
+                // Adicionar configurações extras da documentação, para ler os XMLs
+                var xmlArquivo = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlArquivo));
+
             });
         }
 
