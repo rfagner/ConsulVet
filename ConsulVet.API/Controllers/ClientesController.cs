@@ -1,5 +1,6 @@
 ﻿using ConsulVet.API.Models;
 using ConsulVet.API.Repositories;
+using ConsulVet.API.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -22,10 +23,22 @@ namespace ConsulVet.API.Controllers
         /// <param name="cliente">Dados do cliente</param>
         /// <returns>Dados do cliente cadastrado</returns>
         [HttpPost]
-        public IActionResult Cadastrar(Cliente cliente)
+        public IActionResult Cadastrar([FromForm] Cliente cliente, IFormFile arquivo)
         {
             try
             {
+                #region Upload de Imagem
+                string[] extensoesPermitidas = { "jpeg", "jpg", "png", "svg" };
+                string uploadResultado = Upload.UploadFile(arquivo, extensoesPermitidas, "Images");
+
+                if(uploadResultado == "")
+                {
+                    return BadRequest("Arquivo não encontrado ou extensão não permitida");
+                }
+
+                cliente.Imagem = uploadResultado;                
+                #endregion
+
                 repositorio.Insert(cliente);
                 return Ok(cliente);
             }
@@ -70,10 +83,22 @@ namespace ConsulVet.API.Controllers
         /// <param name="cliente">Todas as informações do cliente</param>
         /// <returns>Cliente alterado</returns>
         [HttpPut("{id}")]
-        public IActionResult Alterar(int id, Cliente cliente)
+        public IActionResult Alterar([FromForm] int id, Cliente cliente, IFormFile arquivo)
         {
             try
             {
+                #region Upload de Imagem
+                string[] extensoesPermitidas = { "jpeg", "jpg", "png", "svg" };
+                string uploadResultado = Upload.UploadFile(arquivo, extensoesPermitidas, "Images");
+
+                if (uploadResultado == "")
+                {
+                    return BadRequest("Arquivo não encontrado ou extensão não permitida");
+                }
+
+                cliente.Imagem = uploadResultado;                
+                #endregion
+
                 var buscarCliente = repositorio.GetById(id);
                 if(buscarCliente == null)
                 {

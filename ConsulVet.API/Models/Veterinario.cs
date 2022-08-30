@@ -16,5 +16,6 @@ namespace ConsulVet.API.Models
         [Required(ErrorMessage = "Informe sua senha")]
         [MinLength(8, ErrorMessage = "A senha deve conter no mínimo 8 caracteres")]
         public string Senha { get; set; }
+        public string Imagem { get; set; }
     }
 }

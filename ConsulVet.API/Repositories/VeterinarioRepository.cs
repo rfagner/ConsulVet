@@ -63,7 +63,8 @@ namespace ConsulVet.API.Repositories
                                 Id = (int)reader[0],
                                 Nome = (string)reader[1],
                                 Email = (string)reader[2],
-                                Senha = (string)reader[3]
+                                Senha = (string)reader[3],
+                                Imagem = (string)reader[4].ToString(),
                             });
                         }
                     }
@@ -112,7 +113,7 @@ namespace ConsulVet.API.Repositories
             {
                 conexao.Open();
 
-                string script = "INSERT INTO Veterinario (Nome, Email, Senha) VALUES (@Nome, @Email, @Senha)";
+                string script = "INSERT INTO Veterinario (Nome, Email, Senha, Imagem) VALUES (@Nome, @Email, @Senha, @Imagem)";
 
                 // Criamos o comando de execução no banco
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
@@ -121,6 +122,7 @@ namespace ConsulVet.API.Repositories
                     cmd.Parameters.Add("@Nome", SqlDbType.NVarChar).Value = veterinario.Nome;
                     cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = veterinario.Email;
                     cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = veterinario.Senha;
+                    cmd.Parameters.Add("@Imagem", SqlDbType.NVarChar).Value = veterinario.Imagem;
 
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();
@@ -137,7 +139,7 @@ namespace ConsulVet.API.Repositories
             {
                 conexao.Open();
 
-                string script = "UPDATE Veterinario SET Nome=@Nome, Email=@Email, Senha=@Senha WHERE Id=@id";
+                string script = "UPDATE Veterinario SET Nome=@Nome, Email=@Email, Senha=@Senha, Imagem=@Imagem WHERE Id=@id";
 
                 // Criamos o comando de execução no banco
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
@@ -147,6 +149,7 @@ namespace ConsulVet.API.Repositories
                     cmd.Parameters.Add("@Nome", SqlDbType.NVarChar).Value = veterinario.Nome;
                     cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = veterinario.Email;
                     cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = veterinario.Senha;
+                    cmd.Parameters.Add("@Imagem", SqlDbType.NVarChar).Value = veterinario.Imagem;
 
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();

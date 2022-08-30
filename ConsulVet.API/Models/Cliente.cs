@@ -19,5 +19,6 @@ namespace ConsulVet.API.Models
 
         [Required(ErrorMessage = "Informe o nome do Pet")]
         public string NomePet { get; set; }
+        public string Imagem { get; set; }        
     }
 }

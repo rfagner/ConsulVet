@@ -62,7 +62,8 @@ namespace ConsulVet.API.Repositories
                                 Nome = (string)reader[1],
                                 Email = (string)reader[2],
                                 Senha = (string)reader[3],
-                                NomePet = (string)reader[4]
+                                NomePet = (string)reader[4],
+                                Imagem = (string)reader[5].ToString(),                                
                             });
                         }
                     }
@@ -98,6 +99,7 @@ namespace ConsulVet.API.Repositories
                             cliente.Email = (string)reader[2];
                             cliente.Senha = (string)reader[3];
                             cliente.NomePet = (string)reader[4];                            
+                            cliente.Imagem = (string)reader[5];                            
                         }
                     }
                 }
@@ -114,7 +116,7 @@ namespace ConsulVet.API.Repositories
             {
                 conexao.Open();
 
-                string script = "INSERT INTO Cliente (Nome, Email, Senha, NomePet) VALUES (@Nome, @Email, @Senha, @NomePet)";
+                string script = "INSERT INTO Cliente (Nome, Email, Senha, NomePet, Imagem) VALUES (@Nome, @Email, @Senha, @NomePet, @Imagem)";
 
                 // Criamos o comando de execução no banco
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
@@ -124,6 +126,8 @@ namespace ConsulVet.API.Repositories
                     cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = cliente.Email;
                     cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = cliente.Senha;
                     cmd.Parameters.Add("@NomePet", SqlDbType.NVarChar).Value = cliente.NomePet;
+                    cmd.Parameters.Add("@Imagem", SqlDbType.NVarChar).Value = cliente.Imagem;
+                    
 
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();
@@ -140,7 +144,7 @@ namespace ConsulVet.API.Repositories
             {
                 conexao.Open();
 
-                string script = "UPDATE Cliente SET Nome=@Nome, Email=@Email, Senha=@Senha, NomePet=@NomePet WHERE Id=@id";
+                string script = "UPDATE Cliente SET Nome=@Nome, Email=@Email, Senha=@Senha, NomePet=@NomePet, Imagem=@Imagem WHERE Id=@id";
 
                 // Criamos o comando de execução no banco
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
@@ -151,6 +155,7 @@ namespace ConsulVet.API.Repositories
                     cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = cliente.Email;
                     cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = cliente.Senha;
                     cmd.Parameters.Add("@NomePet", SqlDbType.NVarChar).Value = cliente.NomePet;
+                    cmd.Parameters.Add("@Imagem", SqlDbType.NVarChar).Value = cliente.Imagem;                    
 
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();

@@ -1,5 +1,6 @@
 ﻿using ConsulVet.API.Models;
 using ConsulVet.API.Repositories;
+using ConsulVet.API.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -22,10 +23,22 @@ namespace ConsulVet.API.Controllers
         /// <param name="veterinario">Dados do veterinário</param>
         /// <returns>Dados do veterinário cadastrado</returns>
         [HttpPost]
-        public IActionResult Cadastrar(Veterinario veterinario)
+        public IActionResult Cadastrar([FromForm] Veterinario veterinario, IFormFile arquivo)
         {
             try
-            {                
+            {
+                #region Upload de Imagem
+                string[] extensoesPermitidas = { "jpeg", "jpg", "png", "svg" };
+                string uploadResultado = Upload.UploadFile(arquivo, extensoesPermitidas, "Images");
+
+                if (uploadResultado == "")
+                {
+                    return BadRequest("Arquivo não encontrado ou extensão não permitida");
+                }
+
+                veterinario.Imagem = uploadResultado;
+                #endregion
+
                 repositorio.Insert(veterinario);
                 return Ok(veterinario);
             }
@@ -70,10 +83,22 @@ namespace ConsulVet.API.Controllers
         /// <param name="veterinario">Todas as informações do veterinário</param>
         /// <returns>Veterinário alterado</returns>
         [HttpPut("{id}")]
-        public IActionResult Alterar(int id, Veterinario veterinario)
+        public IActionResult Alterar([FromForm] int id, Veterinario veterinario, IFormFile arquivo)
         {
             try
             {
+                #region Upload de Imagem
+                string[] extensoesPermitidas = { "jpeg", "jpg", "png", "svg" };
+                string uploadResultado = Upload.UploadFile(arquivo, extensoesPermitidas, "Images");
+
+                if (uploadResultado == "")
+                {
+                    return BadRequest("Arquivo não encontrado ou extensão não permitida");
+                }
+
+                veterinario.Imagem = uploadResultado;
+                #endregion
+
                 var buscarVeterinario = repositorio.GetById(id);
                 if (buscarVeterinario == null)
                 {
