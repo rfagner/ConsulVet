@@ -1,4 +1,5 @@
 ﻿using ConsulVet.API.Models;
+using ConsulVet.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,8 +13,8 @@ namespace ConsulVet.API.Controllers
     [ApiController]
     public class ConsultasController : ControllerBase
     {
-        // Criar string de conexão com o banco de dados
-        readonly string connectionString = "Data Source=DESKTOP-S1VHG92\\SQLEXPRESS;Integrated Security=true;Initial Catalog=ConsulVet";
+        // Variável que liga os objetos da classe Repository
+        private ConsultaRepository repositorio = new ConsultaRepository();
 
         // POST - Cadastrar
         /// <summary>
@@ -26,26 +27,7 @@ namespace ConsulVet.API.Controllers
         {
             try
             {
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
-                {
-                    conexao.Open();
-
-                    string script = "INSERT INTO Consulta (DataHora, ClienteId, VeterinarioId) VALUES (@DataHora, @ClienteId, @VeterinarioId)";
-
-                    // Criamos o comando de execução no banco
-                    using (SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Fazemos as declarações das variáveis por parâmetros
-                        cmd.Parameters.Add("@DataHora", SqlDbType.DateTime).Value = consulta.DataHora;
-                        cmd.Parameters.Add("@ClienteId", SqlDbType.Int).Value = consulta.ClienteId;
-                        cmd.Parameters.Add("@VeterinarioId", SqlDbType.Int).Value = consulta.VeterinarioId;
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
+                repositorio.Insert(consulta);
                 return Ok(consulta);
             }
             catch (System.Exception ex)
@@ -67,36 +49,8 @@ namespace ConsulVet.API.Controllers
         public IActionResult Listar()
         {
             try
-            {
-                var consultas = new List<Consulta>();
-
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
-                {
-                    conexao.Open();
-
-                    string script = "SELECT * FROM Consulta";
-
-                    using(SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Ler todos os itens do script
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                consultas.Add(new Consulta
-                                {
-                                    Id = (int)reader[0],
-                                    DataHora = (DateTime)reader[1],
-                                    ClienteId = (int)reader[2],
-                                    VeterinarioId = (int)reader[3]
-                                });
-                            }
-                        }
-                    }
-
-                }
-
+            {                
+                var consultas = repositorio.GetAll();
                 return Ok(consultas);
             }
             catch (System.Exception ex)
@@ -121,28 +75,13 @@ namespace ConsulVet.API.Controllers
         {
             try
             {
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
+                var buscarConsulta = repositorio.GetById(id);
+                if(buscarConsulta == null)
                 {
-                    conexao.Open();
-
-                    string script = "UPDATE Consulta SET DataHora=@DataHora, ClienteId=@ClienteId, VeterinarioId=@VeterinarioId WHERE Id=@id";
-
-                    // Criamos o comando de execução no banco
-                    using (SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Fazemos as declarações das variáveis por parâmetros
-                        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
-                        cmd.Parameters.Add("@DataHora", SqlDbType.DateTime).Value = consulta.DataHora;
-                        cmd.Parameters.Add("@ClienteId", SqlDbType.Int).Value = consulta.ClienteId;
-                        cmd.Parameters.Add("@VeterinarioId", SqlDbType.Int).Value = consulta.VeterinarioId;
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();
-                        consulta.Id = id;
-                    }
+                    return NotFound();
                 }
 
+                var consultaAlterada = repositorio.Update(id, consulta);
                 return Ok(consulta);
             }
             catch (System.Exception ex)
@@ -166,23 +105,13 @@ namespace ConsulVet.API.Controllers
         {
             try
             {
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
+                var buscarConsulta = repositorio.GetById(id);
+                if (buscarConsulta == null)
                 {
-                    conexao.Open();
-
-                    string script = "DELETE FROM Consulta WHERE Id=@id";
-
-                    // Criamos o comando de execução no banco
-                    using (SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Fazemos as declarações das variáveis por parâmetros
-                        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;                        
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();                        
-                    }
+                    return NotFound();
                 }
+
+                repositorio.Delete(id);
 
                 return Ok(new
                 {

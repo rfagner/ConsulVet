@@ -1,4 +1,5 @@
 ﻿using ConsulVet.API.Models;
+using ConsulVet.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace ConsulVet.API.Controllers
     [ApiController]
     public class VeterinariosController : ControllerBase
     {
-        // Criar string de conexão com o banco de dados
-        readonly string connectionString = "Data Source=DESKTOP-S1VHG92\\SQLEXPRESS;Integrated Security=true;Initial Catalog=ConsulVet";
+        // Variável que liga os objetos da classe Repository
+        private VeterinarioRepository repositorio = new VeterinarioRepository();
 
         // POST - Cadastrar
         /// <summary>
@@ -24,27 +25,8 @@ namespace ConsulVet.API.Controllers
         public IActionResult Cadastrar(Veterinario veterinario)
         {
             try
-            {
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
-                {
-                    conexao.Open();
-
-                    string script = "INSERT INTO Veterinario (Nome, Email, Senha) VALUES (@Nome, @Email, @Senha)";
-
-                    // Criamos o comando de execução no banco
-                    using (SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Fazemos as declarações das variáveis por parâmetros
-                        cmd.Parameters.Add("@Nome", SqlDbType.NVarChar).Value = veterinario.Nome;
-                        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = veterinario.Email;
-                        cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = veterinario.Senha;
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
+            {                
+                repositorio.Insert(veterinario);
                 return Ok(veterinario);
             }
             catch (System.Exception ex)
@@ -67,35 +49,7 @@ namespace ConsulVet.API.Controllers
         {
             try
             {
-                var veterinarios = new List<Veterinario>();
-
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
-                {
-                    conexao.Open();
-
-                    string script = "SELECT * FROM Veterinario";
-
-                    using(SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Ler todos os itens do script
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                veterinarios.Add(new Veterinario
-                                {
-                                    Id = (int)reader[0],
-                                    Nome = (string)reader[1],
-                                    Email = (string)reader[2],
-                                    Senha = (string)reader[3]                                    
-                                });
-                            }
-                        }
-                    }
-
-                }
-
+                var veterinarios = repositorio.GetAll();
                 return Ok(veterinarios);
             }
             catch (System.Exception ex)
@@ -120,28 +74,13 @@ namespace ConsulVet.API.Controllers
         {
             try
             {
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
+                var buscarVeterinario = repositorio.GetById(id);
+                if (buscarVeterinario == null)
                 {
-                    conexao.Open();
-
-                    string script = "UPDATE Veterinario SET Nome=@Nome, Email=@Email, Senha=@Senha WHERE Id=@id";
-
-                    // Criamos o comando de execução no banco
-                    using (SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Fazemos as declarações das variáveis por parâmetros
-                        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
-                        cmd.Parameters.Add("@Nome", SqlDbType.NVarChar).Value = veterinario.Nome;
-                        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = veterinario.Email;
-                        cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = veterinario.Senha;
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();
-                        veterinario.Id = id;
-                    }
+                    return NotFound();
                 }
 
+                var veterinarioAlterado = repositorio.Update(id, veterinario);
                 return Ok(veterinario);
             }
             catch (System.Exception ex)
@@ -165,24 +104,13 @@ namespace ConsulVet.API.Controllers
         {
             try
             {
-                // Abre uma conexão
-                using (SqlConnection conexao = new SqlConnection(connectionString))
+                var buscarVeterinario = repositorio.GetById(id);
+                if (buscarVeterinario == null)
                 {
-                    conexao.Open();
-
-                    string script = "DELETE FROM Veterinario WHERE Id=@id";
-
-                    // Criamos o comando de execução no banco
-                    using (SqlCommand cmd = new SqlCommand(script, conexao))
-                    {
-                        // Fazemos as declarações das variáveis por parâmetros
-                        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;                        
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();
-                        
-                    }
+                    return NotFound();
                 }
+
+                repositorio.Delete(id);
 
                 return Ok(new
                 {
