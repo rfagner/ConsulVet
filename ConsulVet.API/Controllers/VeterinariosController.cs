@@ -83,7 +83,7 @@ namespace ConsulVet.API.Controllers
         /// <param name="veterinario">Todas as informações do veterinário</param>
         /// <returns>Veterinário alterado</returns>
         [HttpPut("{id}")]
-        public IActionResult Alterar([FromForm] int id, Veterinario veterinario, IFormFile arquivo)
+        public IActionResult Alterar(int id, [FromForm] Veterinario veterinario, IFormFile arquivo)
         {
             try
             {

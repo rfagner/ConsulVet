@@ -150,12 +150,12 @@ namespace ConsulVet.API.Repositories
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
                 {
                     // Fazemos as declarações das variáveis por parâmetros
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
-                    cmd.Parameters.Add("@Nome", SqlDbType.NVarChar).Value = cliente.Nome;
-                    cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = cliente.Email;
-                    cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = cliente.Senha;
-                    cmd.Parameters.Add("@NomePet", SqlDbType.NVarChar).Value = cliente.NomePet;
-                    cmd.Parameters.Add("@Imagem", SqlDbType.NVarChar).Value = cliente.Imagem;                    
+                    cmd.Parameters.Add("id", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("Nome", SqlDbType.NVarChar).Value = cliente.Nome;
+                    cmd.Parameters.Add("Email", SqlDbType.NVarChar).Value = cliente.Email;
+                    cmd.Parameters.Add("Senha", SqlDbType.NVarChar).Value = cliente.Senha;
+                    cmd.Parameters.Add("NomePet", SqlDbType.NVarChar).Value = cliente.NomePet;
+                    cmd.Parameters.Add("Imagem", SqlDbType.NVarChar).Value = cliente.Imagem;                    
 
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();

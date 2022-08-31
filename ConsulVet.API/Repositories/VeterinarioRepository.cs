@@ -3,6 +3,7 @@ using ConsulVet.API.Models;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ConsulVet.API.Repositories
 {
@@ -89,6 +90,7 @@ namespace ConsulVet.API.Repositories
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
                 {
                     // Ler todos os itens do script
+                    cmd.Parameters.Add("id", SqlDbType.Int).Value = id;
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -96,7 +98,8 @@ namespace ConsulVet.API.Repositories
                             veterinario.Id = (int)reader[0];
                             veterinario.Nome = (string)reader[1];
                             veterinario.Email = (string)reader[2];
-                            veterinario.Senha = (string)reader[3];                        
+                            veterinario.Senha = (string)reader[3];
+                            veterinario.Imagem = (string)reader[4].ToString();
                         }
                     }
                 }
@@ -145,11 +148,11 @@ namespace ConsulVet.API.Repositories
                 using (SqlCommand cmd = new SqlCommand(script, conexao))
                 {
                     // Fazemos as declarações das variáveis por parâmetros
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
-                    cmd.Parameters.Add("@Nome", SqlDbType.NVarChar).Value = veterinario.Nome;
-                    cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = veterinario.Email;
-                    cmd.Parameters.Add("@Senha", SqlDbType.NVarChar).Value = veterinario.Senha;
-                    cmd.Parameters.Add("@Imagem", SqlDbType.NVarChar).Value = veterinario.Imagem;
+                    cmd.Parameters.Add("id", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("Nome", SqlDbType.NVarChar).Value = veterinario.Nome;
+                    cmd.Parameters.Add("Email", SqlDbType.NVarChar).Value = veterinario.Email;
+                    cmd.Parameters.Add("Senha", SqlDbType.NVarChar).Value = veterinario.Senha;
+                    cmd.Parameters.Add("Imagem", SqlDbType.NVarChar).Value = veterinario.Imagem;
 
                     cmd.CommandType = CommandType.Text;
                     cmd.ExecuteNonQuery();
